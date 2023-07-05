@@ -9,20 +9,14 @@ use zero2prod::{configuration::get_configuration, startup::run};
 static TRACING: Lazy<()> = Lazy::new(|| {
     let default_filter_level = "info".into();
     let subscriber_name = "test".into();
-    // We cannot assign the output of `get_subscriber` to a variable on the 
+    // We cannot assign the output of `get_subscriber` to a variable on the
     // value of `TEST_LOG` because the sink part of the type returned by
     // `get_subscriber`, therefore they are not the same type.
     if std::env::var("TEST_LOG").is_ok() {
-        let subscriber = get_subscriber(
-            subscriber_name,
-            default_filter_level,
-            std::io::stdout);
+        let subscriber = get_subscriber(subscriber_name, default_filter_level, std::io::stdout);
         init_subscriber(subscriber);
     } else {
-        let subscriber = get_subscriber(
-            subscriber_name,
-            default_filter_level,
-            std::io::sink);
+        let subscriber = get_subscriber(subscriber_name, default_filter_level, std::io::sink);
         init_subscriber(subscriber);
     }
 });
@@ -57,10 +51,9 @@ async fn spawn_app() -> TestApp {
 
 pub async fn configure_database(config: &DatabaseSettings) -> PgPool {
     // Create database
-    let mut connection = 
-        PgConnection::connect(&config.connection_string_without_db())
-            .await
-            .expect("Failed to connect to Postgres.");
+    let mut connection = PgConnection::connect(&config.connection_string_without_db())
+        .await
+        .expect("Failed to connect to Postgres.");
 
     connection
         .execute(format!(r#"CREATE DATABASE "{}";"#, config.database_name).as_str())
